@@ -30,7 +30,18 @@ margin-bottom:5px;
 text-align:center;
 font-size:14px;
 color:#666;
-margin-bottom:18px;
+margin-bottom:15px;
+}
+
+.search-box{
+margin-bottom:10px;
+}
+
+.search-box input{
+width:100%;
+padding:9px;
+border:1px solid #ddd;
+border-radius:6px;
 }
 
 .input-area{
@@ -99,6 +110,12 @@ font-size:12px;
 background:#c0392b;
 }
 
+.empty{
+text-align:center;
+color:#888;
+margin-top:20px;
+}
+
 </style>
 
 </head>
@@ -111,12 +128,20 @@ background:#c0392b;
 
 <p id="taskCounter">Total: 0 | Completed: 0 | Pending: 0</p>
 
+<div class="search-box">
+<input id="searchInput" placeholder="Search tasks...">
+</div>
+
 <div class="input-area">
 <input id="taskInput" placeholder="Enter task">
 <button class="add-btn" onclick="addTask()">Add</button>
 </div>
 
 <ul id="taskList"></ul>
+
+<p id="emptyMessage" class="empty" style="display:none;">
+No tasks yet. Add your first task.
+</p>
 
 </div>
 
@@ -128,6 +153,8 @@ async function loadTasks() {
   const tasks = await res.json();
 
   const list = document.getElementById("taskList");
+  const empty = document.getElementById("emptyMessage");
+
   list.innerHTML = "";
 
   const total = tasks.length;
@@ -136,6 +163,12 @@ async function loadTasks() {
 
   document.getElementById("taskCounter").innerText =
   `Total: ${total} | Completed: ${completed} | Pending: ${pending}`;
+
+  if(tasks.length === 0){
+    empty.style.display = "block";
+  }else{
+    empty.style.display = "none";
+  }
 
   tasks.forEach(task => {
 
@@ -205,10 +238,24 @@ async function deleteTask(id) {
 loadTasks();
 
 document.getElementById("taskInput").addEventListener("keypress", function(e){
-
   if(e.key === "Enter"){
     addTask();
   }
+});
+
+/* Search Tasks */
+
+document.getElementById("searchInput").addEventListener("input", function(){
+
+  const value = this.value.toLowerCase();
+  const tasks = document.querySelectorAll("#taskList li");
+
+  tasks.forEach(task => {
+
+    const text = task.innerText.toLowerCase();
+    task.style.display = text.includes(value) ? "flex" : "none";
+
+  });
 
 });
 
