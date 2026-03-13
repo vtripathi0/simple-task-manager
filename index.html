@@ -1,3 +1,125 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Task Manager</title>
+
+<style>
+
+body{
+font-family:'Segoe UI', Arial, sans-serif;
+background:#f2f4f7;
+margin:0;
+}
+
+.container{
+width:420px;
+margin:70px auto;
+background:#fff;
+padding:28px;
+border-radius:10px;
+box-shadow:0 8px 18px rgba(0,0,0,0.08);
+}
+
+h1{
+text-align:center;
+margin-bottom:5px;
+}
+
+#taskCounter{
+text-align:center;
+font-size:14px;
+color:#666;
+margin-bottom:18px;
+}
+
+.input-area{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+
+input{
+flex:1;
+padding:10px;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+input:focus{
+outline:none;
+border-color:#4f6bed;
+}
+
+.add-btn{
+background:#4f6bed;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.add-btn:hover{
+background:#3e57d4;
+}
+
+ul{
+padding:0;
+margin-top:15px;
+}
+
+li{
+list-style:none;
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px;
+border:1px solid #eee;
+border-radius:6px;
+margin-bottom:8px;
+background:#fafafa;
+}
+
+li span{
+flex:1;
+}
+
+.delete-btn{
+background:#e74c3c;
+border:none;
+color:white;
+padding:5px 10px;
+border-radius:4px;
+cursor:pointer;
+font-size:12px;
+}
+
+.delete-btn:hover{
+background:#c0392b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Task Manager</h1>
+
+<p id="taskCounter">Total: 0 | Completed: 0 | Pending: 0</p>
+
+<div class="input-area">
+<input id="taskInput" placeholder="Enter task">
+<button class="add-btn" onclick="addTask()">Add</button>
+</div>
+
+<ul id="taskList"></ul>
+
+</div>
+
 <script>
 
 async function loadTasks() {
@@ -7,8 +129,6 @@ async function loadTasks() {
 
   const list = document.getElementById("taskList");
   list.innerHTML = "";
-
-  /* Task Counter */
 
   const total = tasks.length;
   const completed = tasks.filter(t => t.completed).length;
@@ -24,7 +144,7 @@ async function loadTasks() {
     li.innerHTML = `
       <input type="checkbox" ${task.completed ? "checked" : ""} onclick="toggleTask(${task.id})">
 
-      <span style="flex:1; margin-left:8px; ${task.completed ? "text-decoration: line-through; color:gray;" : ""}">
+      <span style="${task.completed ? "text-decoration: line-through; color:gray;" : ""}">
         ${task.text}
       </span>
 
@@ -48,13 +168,12 @@ async function addTask() {
   }
 
   await fetch('/api/tasks', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text })
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({text})
   });
 
   input.value = "";
-
   loadTasks();
 
 }
@@ -62,9 +181,9 @@ async function addTask() {
 async function toggleTask(id) {
 
   await fetch('/api/tasks', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id })
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id})
   });
 
   loadTasks();
@@ -74,9 +193,9 @@ async function toggleTask(id) {
 async function deleteTask(id) {
 
   await fetch('/api/tasks', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id })
+    method:'DELETE',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id})
   });
 
   loadTasks();
@@ -85,14 +204,15 @@ async function deleteTask(id) {
 
 loadTasks();
 
-/* Enter key se task add */
+document.getElementById("taskInput").addEventListener("keypress", function(e){
 
-document.getElementById("taskInput").addEventListener("keypress", function(e) {
-
-  if (e.key === "Enter") {
+  if(e.key === "Enter"){
     addTask();
   }
 
 });
 
 </script>
+
+</body>
+</html>
