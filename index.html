@@ -26,6 +26,25 @@ text-align:center;
 margin-bottom:5px;
 }
 
+.project-links{
+text-align:center;
+margin-bottom:10px;
+}
+
+.project-links a{
+text-decoration:none;
+background:#4f6bed;
+color:white;
+padding:6px 12px;
+margin:0 5px;
+border-radius:5px;
+font-size:13px;
+}
+
+.project-links a:hover{
+background:#3e57d4;
+}
+
 #taskCounter{
 text-align:center;
 font-size:14px;
@@ -75,6 +94,21 @@ cursor:pointer;
 background:#3e57d4;
 }
 
+.clear-btn{
+width:100%;
+margin-top:10px;
+padding:8px;
+border:none;
+background:#f39c12;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.clear-btn:hover{
+background:#d68910;
+}
+
 ul{
 padding:0;
 margin-top:15px;
@@ -96,6 +130,11 @@ li span{
 flex:1;
 }
 
+.time{
+font-size:11px;
+color:#888;
+}
+
 .delete-btn{
 background:#e74c3c;
 border:none;
@@ -106,8 +145,22 @@ cursor:pointer;
 font-size:12px;
 }
 
+.edit-btn{
+background:#3498db;
+border:none;
+color:white;
+padding:5px 10px;
+border-radius:4px;
+cursor:pointer;
+font-size:12px;
+}
+
 .delete-btn:hover{
 background:#c0392b;
+}
+
+.edit-btn:hover{
+background:#2c80b4;
 }
 
 .empty{
@@ -126,6 +179,11 @@ margin-top:20px;
 
 <h1>Task Manager</h1>
 
+<div class="project-links">
+<a href="YOUR_VERCEL_LINK" target="_blank">Live App</a>
+<a href="YOUR_GITHUB_LINK" target="_blank">GitHub Repo</a>
+</div>
+
 <p id="taskCounter">Total: 0 | Completed: 0 | Pending: 0</p>
 
 <div class="search-box">
@@ -136,6 +194,8 @@ margin-top:20px;
 <input id="taskInput" placeholder="Enter task">
 <button class="add-btn" onclick="addTask()">Add</button>
 </div>
+
+<button class="clear-btn" onclick="clearCompleted()">Clear Completed Tasks</button>
 
 <ul id="taskList"></ul>
 
@@ -179,7 +239,10 @@ async function loadTasks() {
 
       <span style="${task.completed ? "text-decoration: line-through; color:gray;" : ""}">
         ${task.text}
+        <div class="time">${task.createdAt}</div>
       </span>
+
+      <button class="edit-btn" onclick="editTask(${task.id}, '${task.text}')">Edit</button>
 
       <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
     `;
@@ -235,6 +298,34 @@ async function deleteTask(id) {
 
 }
 
+async function editTask(id, oldText){
+
+  const newText = prompt("Edit task:", oldText);
+
+  if(!newText) return;
+
+  await fetch('/api/tasks',{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:id, text:newText})
+  });
+
+  loadTasks();
+
+}
+
+async function clearCompleted(){
+
+  await fetch('/api/tasks',{
+    method:'PATCH',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({})
+  });
+
+  loadTasks();
+
+}
+
 loadTasks();
 
 document.getElementById("taskInput").addEventListener("keypress", function(e){
@@ -242,8 +333,6 @@ document.getElementById("taskInput").addEventListener("keypress", function(e){
     addTask();
   }
 });
-
-/* Search Tasks */
 
 document.getElementById("searchInput").addEventListener("input", function(){
 

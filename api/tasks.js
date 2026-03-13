@@ -18,7 +18,8 @@ if (!text) {
 const newTask = {
   id: Date.now(),
   text: text,
-  completed: false
+  completed: false,
+  createdAt: new Date().toLocaleTimeString()
 };
 
 tasks.push(newTask);
@@ -50,6 +51,32 @@ const { id } = req.body;
 tasks = tasks.filter(task => task.id !== id);
 
 return res.status(200).json({ message: "Task deleted" });
+```
+
+}
+
+if (req.method === "PATCH") {
+
+```
+const { id, text } = req.body;
+
+if (id && text) {
+
+  // edit task text
+
+  tasks = tasks.map(task =>
+    task.id === id ? { ...task, text: text } : task
+  );
+
+  return res.status(200).json({ message: "Task edited" });
+
+}
+
+// clear completed tasks
+
+tasks = tasks.filter(task => !task.completed);
+
+return res.status(200).json({ message: "Completed tasks cleared" });
 ```
 
 }
