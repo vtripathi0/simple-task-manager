@@ -3,12 +3,16 @@ let tasks = [];
 export default function handler(req, res) {
 
   if (req.method === "GET") {
-    res.status(200).json(tasks);
+    return res.status(200).json(tasks);
   }
 
-  else if (req.method === "POST") {
+  if (req.method === "POST") {
 
     const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: "Task text required" });
+    }
 
     const newTask = {
       id: Date.now(),
@@ -17,6 +21,18 @@ export default function handler(req, res) {
 
     tasks.push(newTask);
 
-    res.status(200).json(newTask);
+    return res.status(200).json(newTask);
   }
+
+  if (req.method === "DELETE") {
+
+    const { id } = req.body;
+
+    tasks = tasks.filter(task => task.id !== id);
+
+    return res.status(200).json({ message: "Task deleted" });
+  }
+
+  return res.status(405).json({ message: "Method not allowed" });
+
 }
