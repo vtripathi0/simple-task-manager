@@ -2,37 +2,58 @@ let tasks = [];
 
 export default function handler(req, res) {
 
-  if (req.method === "GET") {
-    return res.status(200).json(tasks);
-  }
+if (req.method === "GET") {
+return res.status(200).json(tasks);
+}
 
-  if (req.method === "POST") {
+if (req.method === "POST") {
 
-    const { text } = req.body;
+```
+const { text } = req.body;
 
-    if (!text) {
-      return res.status(400).json({ error: "Task text required" });
-    }
+if (!text) {
+  return res.status(400).json({ error: "Task text required" });
+}
 
-    const newTask = {
-      id: Date.now(),
-      text: text
-    };
+const newTask = {
+  id: Date.now(),
+  text: text,
+  completed: false
+};
 
-    tasks.push(newTask);
+tasks.push(newTask);
 
-    return res.status(200).json(newTask);
-  }
+return res.status(200).json(newTask);
+```
 
-  if (req.method === "DELETE") {
+}
 
-    const { id } = req.body;
+if (req.method === "PUT") {
 
-    tasks = tasks.filter(task => task.id !== id);
+```
+const { id } = req.body;
 
-    return res.status(200).json({ message: "Task deleted" });
-  }
+tasks = tasks.map(task =>
+  task.id === id ? { ...task, completed: !task.completed } : task
+);
 
-  return res.status(405).json({ message: "Method not allowed" });
+return res.status(200).json({ message: "Task updated" });
+```
+
+}
+
+if (req.method === "DELETE") {
+
+```
+const { id } = req.body;
+
+tasks = tasks.filter(task => task.id !== id);
+
+return res.status(200).json({ message: "Task deleted" });
+```
+
+}
+
+return res.status(405).json({ message: "Method not allowed" });
 
 }
